@@ -1,0 +1,47 @@
+name: Pi compatibility
+
+on:
+  schedule:
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  latest:
+    name: Latest Pi
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.x"
+          cache: npm
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install latest Pi without changing the lockfile
+        run: |
+          expected_version="$(npm view @earendil-works/pi-coding-agent@latest version --prefer-online)"
+          npm install --no-save --package-lock=false --ignore-scripts --prefer-online \
+            "@earendil-works/pi-coding-agent@${expected_version}"
+          installed_version="$(node -p "require('./node_modules/@earendil-works/pi-coding-agent/package.json').version")"
+          printf 'Expected Pi: %s\nInstalled Pi: %s\n' "$expected_version" "$installed_version"
+          test "$installed_version" = "$expected_version"
+
+      - name: Run checks against latest Pi
+        run: npm run check
+
+      - name: Verify Pi loads the package
+        run: node_modules/.bin/pi --offline --no-extensions -e . --list-models > /dev/null
+
+      - name: Verify compatibility checks leave source unchanged
+        run: git diff --exit-code
