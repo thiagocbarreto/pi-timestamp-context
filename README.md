@@ -29,18 +29,27 @@ Messages replaced by a compaction summary no longer exist as individual context 
 
 This extension sends message timestamps and readable local datetimes to the selected model provider as part of model context. It does not access the filesystem, start processes, make network requests, read environment variables, or persist data.
 
-## Local installation
+## Installation
+
+Install from npm:
 
 ```sh
-pi install /absolute/path/to/pi-timestamp-context
+pi install npm:@thiagocbarreto/pi-timestamp-context
 ```
 
 Restart Pi after installation. Use `pi list` to confirm that the package is loaded.
 
-Remove it with:
+Update or remove it with:
 
 ```sh
-pi remove /absolute/path/to/pi-timestamp-context
+pi update npm:@thiagocbarreto/pi-timestamp-context
+pi remove npm:@thiagocbarreto/pi-timestamp-context
+```
+
+Install a local checkout during development with:
+
+```sh
+pi install /absolute/path/to/pi-timestamp-context
 ```
 
 ## Development

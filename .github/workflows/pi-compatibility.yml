@@ -2,7 +2,7 @@ name: Pi compatibility
 
 on:
   schedule:
-    - cron: "17 8 * * *"
+    - cron: "17 12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -28,14 +28,18 @@ jobs:
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
 
-      - name: Install latest Pi without changing the lockfile
+      - name: Install latest Pi SDK packages without changing the lockfile
         run: |
           expected_version="$(npm view @earendil-works/pi-coding-agent@latest version --prefer-online)"
           npm install --no-save --package-lock=false --ignore-scripts --prefer-online \
+            "@earendil-works/pi-ai@${expected_version}" \
             "@earendil-works/pi-coding-agent@${expected_version}"
-          installed_version="$(node -p "require('./node_modules/@earendil-works/pi-coding-agent/package.json').version")"
-          printf 'Expected Pi: %s\nInstalled Pi: %s\n' "$expected_version" "$installed_version"
-          test "$installed_version" = "$expected_version"
+          installed_agent_version="$(node -p "require('./node_modules/@earendil-works/pi-coding-agent/package.json').version")"
+          installed_ai_version="$(node -p "require('./node_modules/@earendil-works/pi-ai/package.json').version")"
+          printf 'Expected Pi: %s\nInstalled coding agent: %s\nInstalled Pi AI: %s\n' \
+            "$expected_version" "$installed_agent_version" "$installed_ai_version"
+          test "$installed_agent_version" = "$expected_version"
+          test "$installed_ai_version" = "$expected_version"
 
       - name: Run checks against latest Pi
         run: npm run check

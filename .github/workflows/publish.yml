@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  npm:
+    name: npm
+    runs-on: ubuntu-latest
+    environment: npm
+
+    steps:
+      - name: Require a public source repository
+        env:
+          REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: test "$REPOSITORY_VISIBILITY" = "public"
+
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.x"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Install dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Run checks
+        run: npm run check
+
+      - name: Verify release metadata
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from "node:fs/promises";
+
+          const manifest = JSON.parse(await readFile("package.json", "utf8"));
+          if (manifest.private === true) throw new Error("Remove package.json private flag before publishing");
+          if (manifest.name !== "@thiagocbarreto/pi-timestamp-context") {
+            throw new Error(`Unexpected package name: ${manifest.name}`);
+          }
+          if (process.env.RELEASE_REF !== `refs/tags/v${manifest.version}`) {
+            throw new Error(`Release ref must be refs/tags/v${manifest.version}`);
+          }
+          NODE
+
+      - name: Publish package
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
