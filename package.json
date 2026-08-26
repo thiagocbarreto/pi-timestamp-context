@@ -1,0 +1,59 @@
+{
+  "name": "pi-timestamp-context",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Adds each user message's timestamp and local datetime to Pi's LLM context.",
+  "author": "Thiago Barreto",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiagocbarreto/pi-timestamp-context.git"
+  },
+  "homepage": "https://github.com/thiagocbarreto/pi-timestamp-context#readme",
+  "bugs": {
+    "url": "https://github.com/thiagocbarreto/pi-timestamp-context/issues"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-coding-agent",
+    "timestamp",
+    "context"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "files": [
+    "extensions/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "lint": "biome check --vcs-use-ignore-file=false extensions test package.json tsconfig.json biome.json README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md",
+    "format": "npm run lint -- --write",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "typecheck": "tsc --project tsconfig.json",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "prepublishOnly": "npm run check"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/timestamp-context.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "@earendil-works/pi-coding-agent": "0.84.2",
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3"
+  }
+}
