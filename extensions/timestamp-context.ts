@@ -18,7 +18,7 @@ export function formatTimestampContext(timestamp: number, timeZone?: string): st
   const formatter = timeZone
     ? new Intl.DateTimeFormat("en-US", { ...formatterOptions, timeZone })
     : localFormatter;
-  const localDatetime = formatter.format(new Date(timestamp));
+  const localDatetime = formatter.format(new Date(timestamp)).replace(/ GMT$/, " GMT+00:00");
 
   return `<user_message_time unix_ms="${timestamp}">Local datetime: ${localDatetime}</user_message_time>`;
 }
