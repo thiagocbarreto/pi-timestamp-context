@@ -20,12 +20,12 @@ test("published package contains only runtime and user documentation", () => {
   );
 });
 
-test("package metadata follows Pi package rules while publishing stays blocked", () => {
+test("package metadata supports public Pi installation", () => {
   const manifest = JSON.parse(readFileSync("package.json", "utf8"));
 
   assert.equal(manifest.name, "@thiagocbarreto/pi-timestamp-context");
   assert.equal(manifest.version, "0.1.0");
-  assert.equal(manifest.private, true);
+  assert.equal(manifest.private, undefined);
   assert.ok(manifest.keywords.includes("pi-package"));
   assert.deepEqual(manifest.pi.extensions, ["./extensions/timestamp-context.ts"]);
   assert.deepEqual(manifest.peerDependencies, {

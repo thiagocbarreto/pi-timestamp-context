@@ -4,6 +4,8 @@ All notable changes to this package are recorded here. This project follows [Sem
 
 ## Unreleased
 
+## 0.1.0 - 2026-08-31
+
 ### Added
 
 - User-message timestamp metadata in temporary LLM context.
