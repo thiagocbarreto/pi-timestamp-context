@@ -1,5 +1,8 @@
 # Pi Timestamp Context
 
+[![npm version](https://img.shields.io/npm/v/@thiagocbarreto/pi-timestamp-context?color=F0DB4F)](https://npmjs.com/package/@thiagocbarreto/pi-timestamp-context)
+[![npm downloads](https://img.shields.io/npm/dm/@thiagocbarreto/pi-timestamp-context?color=F0DB4F)](https://npmjs.com/package/@thiagocbarreto/pi-timestamp-context)
+
 [Pi](https://pi.dev) extension that gives the model exact time context for every user message. This helps the model account for hours or days that pass before a session resumes.
 
 ## What the model receives
