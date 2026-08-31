@@ -41,7 +41,15 @@ function assistantMessage(model: Model<Api>): AssistantMessage {
   };
 }
 
-test("Pi sends timestamp metadata to the model without changing stored messages", async () => {
+test("Pi sends timestamp metadata to the model without changing stored messages", async (t) => {
+  const previousTimeZone = process.env.TZ;
+  process.env.TZ = "UTC";
+  t.after(() => {
+    if (previousTimeZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousTimeZone;
+  });
+  t.mock.method(Date, "now", () => 0);
+
   const receivedContexts: Context[] = [];
   const modelRuntime = await ModelRuntime.create({
     credentials: new InMemoryCredentialStore(),
@@ -128,15 +136,8 @@ test("Pi sends timestamp metadata to the model without changing stored messages"
       (message) => message.role === "user",
     );
     assert.ok(sentUserMessage && Array.isArray(sentUserMessage.content));
-    const timestampBlock = sentUserMessage.content[0];
-    assert.ok(timestampBlock?.type === "text");
-    assert.match(
-      timestampBlock.text,
-      /^<user_message_time unix_ms="\d+">Local datetime: .+<\/user_message_time>$/,
-    );
-    assert.deepEqual(sentUserMessage.content[1], {
-      type: "text",
-      text: "When did I send this?",
+    await t.assert.fileSnapshot(sentUserMessage, resolve("test/snapshots/model-context.json"), {
+      serializers: [(value) => `${JSON.stringify(value, null, 2)}\n`],
     });
 
     const storedUserMessage = session.messages.find((message) => message.role === "user");

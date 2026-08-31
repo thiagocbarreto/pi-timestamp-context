@@ -12,6 +12,27 @@ The extension prepends one metadata block to each user message in the active mod
 
 `unix_ms` identifies the exact instant without locale ambiguity. The readable value uses English names and the machine's local time zone, including its UTC offset.
 
+For the user text `When did I send this?`, Pi passes this complete user message to the model provider:
+
+```json
+{
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": "<user_message_time unix_ms=\"0\">Local datetime: Thursday, January 1, 1970 at 12:00:00.000 AM GMT+00:00</user_message_time>"
+    },
+    {
+      "type": "text",
+      "text": "When did I send this?"
+    }
+  ],
+  "timestamp": 0
+}
+```
+
+The outer `timestamp` remains Pi metadata. The inserted text block makes the same timestamp visible to models whose provider API does not support a timestamp field.
+
 ## Behavior
 
 - Uses the timestamp Pi recorded when the user message was created.
